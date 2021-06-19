@@ -1,0 +1,177 @@
+﻿<Window x:Class="FordFulkersonVisualization.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FordFulkersonVisualization" 
+        xmlns:arrows="clr-namespace:Petzold.Media2D"
+        xmlns:core="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <local:VertexStatusConverter x:Key="MyVertexStatusConverter"></local:VertexStatusConverter>
+        <local:SourceSinkVertexStatusConverter x:Key="MySourceSinkVertexStatusConverter"></local:SourceSinkVertexStatusConverter>
+        <ObjectDataProvider x:Key="MyVertexStatusEnum"
+                MethodName="GetValues" 
+                ObjectType="{x:Type core:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:VertexStatus" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <local:EdgeStatusConverter x:Key="MyEdgeStatusConverter"></local:EdgeStatusConverter>
+        <ObjectDataProvider x:Key="MyEdgesStatusEnum"
+                MethodName="GetValues" 
+                ObjectType="{x:Type core:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:EdgeStatus" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+    <Grid>
+        <DockPanel>
+            <Grid DockPanel.Dock="Top" Height="70">
+                <TabControl>
+                    <TabItem Header="Algorithm">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Name="RunAlgoButton" Margin="5, 10, 10, 5" Width="120" Background="SpringGreen" Content="Run Algorithm" Click="Button_Click"></Button>
+                            <Button Visibility="Collapsed" Name="DeleteGraphButton" Margin="5, 10, 10, 5" Width="120" Background="Tomato" Content="Delete graph" Click="Button_Click2"></Button>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Graph designer">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Name="AddSourceButton" Click="AddSourceButton_Click" Margin="5, 10, 10, 5" Content="Add source" Padding="5"></Button>
+                            <Button Name="AddSinkButton" Click="AddSinkButton_Click" Margin="0, 10, 10, 5" Content="Add sink" Padding="5"></Button>
+                            <Button Name="AddVertexButton" Click="AddVertexButton_Click" Margin="0, 10, 10, 5" Content="Add vertex" Padding="5"></Button>
+                            <Button Name="AddEdgeButton" Click="AddEdgeButton_Click" Margin="0, 10, 10, 5" Content="Add edge" Padding="5"></Button>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+            <Grid Background="Gainsboro" Name="CanvasSpace" MouseDown="CanvasSpace_MouseDown">
+                <ItemsControl ItemsSource="{Binding Path=Vertices}" Panel.ZIndex="2">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Canvas.Left" Value="{Binding XPos}" />
+                            <Setter Property="Canvas.Top" Value="{Binding YPos}" />
+                            <Setter Property="Width" Value="{Binding Radius}" />
+                            <Setter Property="Height" Value="{Binding Radius}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.Resources>
+                        <DataTemplate DataType="{x:Type local:SourceVertex}">
+                            <Grid>
+                                <Ellipse Fill="{Binding Status, Converter={StaticResource MySourceSinkVertexStatusConverter}}" MouseLeftButtonDown="Ellipse_MouseDown"
+                                         Stroke="Black">
+                                    <Ellipse.Style>
+                                        <Style TargetType="{x:Type Ellipse}">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="StrokeThickness" Value="2">
+                                                    </Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <!--<TextBlock Text="S" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>-->
+                            </Grid>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type local:SinkVertex}">
+                            <Grid>
+                                <Ellipse  MouseLeftButtonDown="Ellipse_MouseDown"
+                                         Fill="{Binding Status, Converter={StaticResource MySourceSinkVertexStatusConverter}}"
+                                          Stroke="Black">
+                                    <Ellipse.Style>
+                                        <Style TargetType="{x:Type Ellipse}">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="StrokeThickness" Value="2">
+                                                    </Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <!--<TextBlock Text="S" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>-->
+                            </Grid>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type local:Vertex}">
+                            <Grid>
+                                <Ellipse MouseLeftButtonDown="Ellipse_MouseDown"
+                                         Fill="{Binding Status, Converter={StaticResource MyVertexStatusConverter}}"
+                                         Stroke="Black">
+                                    <Ellipse.Style>
+                                        <Style TargetType="{x:Type Ellipse}">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="StrokeThickness" Value="2">
+                                                    </Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <!--<TextBlock Text="i" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>-->
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.Resources>
+                </ItemsControl>
+                <ItemsControl ItemsSource="{Binding Edges}" Panel.ZIndex="1">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.Resources>
+                        <DataTemplate DataType="{x:Type local:Edge}">
+                            <Grid>
+                                <arrows:ArrowLine StrokeThickness="2" Stroke="{Binding Status, Converter={StaticResource MyEdgeStatusConverter}}"
+                                                  X1="{Binding StartPoint.X}" Y1="{Binding StartPoint.Y}"
+                                                  X2="{Binding EndPoint.X}" Y2="{Binding EndPoint.Y}"
+                                                  ArrowEnds="End" ArrowLength="10"></arrows:ArrowLine>
+                            </Grid>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type local:PrimaryEdge}">
+                            <Grid>
+                                <arrows:ArrowLine StrokeThickness="2" Stroke="{Binding Status, Converter={StaticResource MyEdgeStatusConverter}}"
+                                                  X1="{Binding StartPoint.X}" Y1="{Binding StartPoint.Y}"
+                                                  X2="{Binding EndPoint.X}" Y2="{Binding EndPoint.Y}"
+                                                  ArrowEnds="End" ArrowLength="10"></arrows:ArrowLine>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.Resources>
+                </ItemsControl>
+                <ItemsControl ItemsSource="{Binding Edges}" Panel.ZIndex="1">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Canvas.Left" Value="{Binding MidPoint.X}" />
+                            <Setter Property="Canvas.Top" Value="{Binding MidPoint.Y}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.Resources>
+                        <DataTemplate DataType="{x:Type local:Edge}">
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel.RenderTransform>
+                                    <RotateTransform CenterX="0.5" CenterY="0.5" Angle="{Binding Angle}"></RotateTransform>
+                                </StackPanel.RenderTransform>
+                                <TextBlock Text="{Binding Flow}"></TextBlock>
+                                <TextBlock Text="/"></TextBlock>
+                                <TextBlock Text="{Binding Capacity}"></TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.Resources>
+                </ItemsControl>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>
